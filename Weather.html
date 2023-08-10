@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title id="title"></title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <link rel="shortcut icon" href="./weather-news.png" type="image/x-icon" />
+    <style>
+      body {
+        height: 100vh;
+        background-image: linear-gradient(#fc00ff, #00dbde);
+      }
+
+      .card {
+        box-shadow: 0px 0px 20px 5px black;
+      }
+    </style>
+  </head>
+
+  <body class="d-flex justify-content-center align-items-center">
+    <div class="container mt-5">
+      <div class="row d-flex justify-content-center">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <div class="h1 text-center">Weather App</div>
+            </div>
+            <div class="card-body">
+              <form action="" class="form">
+                <div class="error"></div>
+                <div class="inputs mt-2 mb-2">
+                  <label for="name" class="form-label mb-3 h4">City Name</label>
+                  <input
+                    type="text"
+                    class="form-control mb-3"
+                    placeholder="Enter City Name"
+                    id="input"
+                    autofocus
+                  />
+                  <div class="d-flex justify-content-between">
+                    <input type="submit" class="btn btn-outline-dark" />
+                    <input type="reset" class="btn btn-outline-danger" />
+                  </div>
+                </div>
+              </form>
+              <div
+                class="result d-flex flex-column justify-content-center align-items-center"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script
+    src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+    integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+    crossorigin="anonymous"
+  ></script>
+  <script>
+    let title = document.getElementById("title");
+    let filePath = document.location.pathname.split("/").pop();
+    title.innerText = filePath.split(".")[0];
+
+    const form = document.querySelector(".form");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      let input = document.getElementById("input");
+      input.classList.remove("is-invalid");
+      let error = document.querySelector(".error");
+      error.innerHTML = "";
+
+      if (input.value == "" || input.value === undefined) {
+        input.classList.add("is-invalid");
+        let inputs = document.querySelector(".inputs");
+
+        error_msg = `<div class="alert alert-danger  fade show" role="alert">
+  Please Enter City Name
+ 
+</div>`;
+        error.innerHTML = error_msg;
+      } else {
+        let key = `28b1712cf3708fd4de476b854928a626`;
+        let city = input.value;
+        let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${key}&units=metric`;
+
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            input.classList.add("is-valid");
+            let result = document.querySelector(".result");
+
+            console.log(data);
+            console.log(data.name);
+            console.log(data.weather[0].description);
+            console.log(data.main.temp);
+            console.log(data.weather[0].main);
+            console.log(data.weather[0].icon);
+            console.log(data.sys.country);
+
+            result.innerHTML = ` <h4 class="text-center mb-3">City: ${data.name}</h4>
+                            <h1 class="text-center mb-3">Temp: ${data.main.temp}°C</h1>
+                            <h1 class="text-center mb-3">Weather: ${data.weather[0].main}</h1>
+                            <h4 class="text-center mb-3">Description: ${data.weather[0].description}</h4>
+                            <img src="https://openweathermap.org/img/w/${data.weather[0].icon}.png" alt="" class="img-fluid w-15">
+                            <h4 class="text-center mb-3">Country: ${data.sys.country}</h4>`;
+          })
+
+          .catch(() => {
+            input.classList.remove("is-valid");
+            error.innerHTML = `<div class="alert alert-danger  fade show" role="alert">
+  Please Enter Correct City Name!
+ 
+</div>`;
+            input.value = "";
+          });
+      }
+    });
+  </script>
+</html>
